@@ -39,11 +39,30 @@ public class AppRunner {
     }
 
     private void startSimulation() {
-        print("В автомате доступны:");
-        showProducts(products);
+        if (currentPaymentMethod == null) {
+            choosePaymentMethod();
+        }
+        while (!isExit) {
+            print("В автомате доступны:");
+            showProducts(products);
 
+            UniversalArray<Product> allowProducts = new UniversalArrayImpl<>();
+            allowProducts.addAll(getAllowedProducts().toArray());
+            if (allowProducts.size() == 0) {
+                print("На вашем балансе недостаточно средств.\nВы можете сменить способ оплаты: (да/нет)");
+                String answer = fromConsole().toLowerCase();
+                if (answer.equals("да")) {
+                    choosePaymentMethod();
+                } else {
+                    print("Пополните текущий баланс.");
+                }
+            } else {
+                chooseAction(allowProducts);
+            }
+        }
+    }
 
-        UniversalArray<Product> allowProducts = new UniversalArrayImpl<>();
+    private void choosePaymentMethod() {
         print("Доступна оплата через банковскую карту и монетами.\nВыберите способ оплаты:\n* Карта\n* Монеты");
         String choice = fromConsole().toLowerCase();
 
@@ -54,14 +73,12 @@ public class AppRunner {
                 break;
             case "монеты":
                 currentPaymentMethod = PaymentMethod.COINS;
+                print("Монет на сумму: " + coinAcceptor.getAmount());
                 break;
             default:
                 print("Недопустимая команда. Попрбуйте еще раз.");
-                chooseAction(products);
                 break;
         }
-
-
     }
 
     private void printBankCard() {
