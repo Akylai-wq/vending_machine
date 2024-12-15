@@ -1,4 +1,5 @@
 import enums.ActionLetter;
+import enums.PaymentMethod;
 import model.*;
 import util.UniversalArray;
 import util.UniversalArrayImpl;
@@ -12,6 +13,8 @@ public class AppRunner {
     private final CoinAcceptor coinAcceptor;
 
     private final BankCardAcceptor bankCardAcceptor;
+
+    private PaymentMethod currentPaymentMethod;
 
     private static boolean isExit = false;
 
@@ -46,20 +49,11 @@ public class AppRunner {
 
         switch (choice){
             case "карта":
-                print("Введите номер карты:");
-                int bankCardNumber = fromConsoleInt();
-                bankCardAcceptor.setBankCardNumber(bankCardNumber);
-                print("Введите четырехзначный пароль от карты:");
-                int passwordCard = fromConsoleInt();
-                bankCardAcceptor.setPasswordCard(passwordCard);
-                print("Баланс карты: " + bankCardAcceptor.getAmount());
-                allowProducts.addAll(getAllowedProducts().toArray());
-                chooseAction(allowProducts);
+                currentPaymentMethod = PaymentMethod.BANKCARD;
+                printBankCard();
                 break;
             case "монеты":
-                print("Монет на сумму: " + coinAcceptor.getAmount());
-                allowProducts.addAll(getAllowedProducts().toArray());
-                chooseAction(allowProducts);
+                currentPaymentMethod = PaymentMethod.COINS;
                 break;
             default:
                 print("Недопустимая команда. Попрбуйте еще раз.");
@@ -70,13 +64,28 @@ public class AppRunner {
 
     }
 
+    private void printBankCard() {
+        print("Введите номер карты:");
+        int bankCardNumber = fromConsoleInt();
+        bankCardAcceptor.setBankCardNumber(bankCardNumber);
+        print("Введите четырехзначный пароль от карты:");
+        int passwordCard = fromConsoleInt();
+        bankCardAcceptor.setPasswordCard(passwordCard);
+        print("Баланс карты: " + bankCardAcceptor.getAmount());
+    }
 
 
     private UniversalArray<Product> getAllowedProducts() {
         UniversalArray<Product> allowProducts = new UniversalArrayImpl<>();
         for (int i = 0; i < products.size(); i++) {
-            if (coinAcceptor.getAmount() >= products.get(i).getPrice()) {
-                allowProducts.add(products.get(i));
+            if (currentPaymentMethod == PaymentMethod.COINS){
+                if (coinAcceptor.getAmount() >= products.get(i).getPrice()) {
+                    allowProducts.add(products.get(i));
+                }
+            } else if (currentPaymentMethod == PaymentMethod.BANKCARD) {
+                if (bankCardAcceptor.getAmount() >= products.get(i).getPrice()) {
+                    allowProducts.add(products.get(i));
+                }
             }
         }
         return allowProducts;
