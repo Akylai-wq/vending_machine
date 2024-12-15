@@ -1,7 +1,7 @@
 package model;
 
 public class BankCardAcceptor {
-    private int bankCardNumber;
+    private long bankCardNumber;
     private int passwordCard;
     private int amount;
 
@@ -9,16 +9,8 @@ public class BankCardAcceptor {
         this.amount = amount;
     }
 
-    public int getBankCardNumber() {
-        return bankCardNumber;
-    }
-
-    public void setBankCardNumber(int bankCardNumber) {
+    public void setBankCardNumber(long bankCardNumber) {
         this.bankCardNumber = bankCardNumber;
-    }
-
-    public int getPasswordCard() {
-        return passwordCard;
     }
 
     public void setPasswordCard(int passwordCard) {

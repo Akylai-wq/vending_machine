@@ -83,7 +83,7 @@ public class AppRunner {
 
     private void printBankCard() {
         print("Введите номер карты:");
-        int bankCardNumber = fromConsoleInt();
+        long bankCardNumber = fromConsoleLong();
         bankCardAcceptor.setBankCardNumber(bankCardNumber);
         print("Введите четырехзначный пароль от карты:");
         int passwordCard = fromConsoleInt();
@@ -116,10 +116,10 @@ public class AppRunner {
         if ("a".equalsIgnoreCase(action)) {
             if (currentPaymentMethod == PaymentMethod.COINS) {
                 coinAcceptor.setAmount(coinAcceptor.getAmount() + 10);
-                print("Вы пополнили баланс на 10");
+                print("Вы пополнили баланс на 10\nМонет на сумму:" + coinAcceptor.getAmount());
             } else if (currentPaymentMethod == PaymentMethod.BANKCARD) {
                 bankCardAcceptor.setAmount(bankCardAcceptor.getAmount() + 20);
-                print("Вы пополнили баланс на 20");
+                print("Вы пополнили баланс на 20\nБаланс карты:" + bankCardAcceptor.getAmount());
             }
         } else {
             try {
@@ -127,10 +127,11 @@ public class AppRunner {
                     if (products.get(i).getActionLetter().equals(ActionLetter.valueOf(action.toUpperCase()))) {
                         if (currentPaymentMethod == PaymentMethod.COINS) {
                             coinAcceptor.setAmount(coinAcceptor.getAmount() - products.get(i).getPrice());
+                            print("Вы купили " + products.get(i).getName() + "\nМонет на сумму: " + coinAcceptor.getAmount());
                         } else if (currentPaymentMethod == PaymentMethod.BANKCARD) {
                             bankCardAcceptor.setAmount(bankCardAcceptor.getAmount() - products.get(i).getPrice());
+                            print("Вы купили " + products.get(i).getName() + "\nБаланс карты: " + bankCardAcceptor.getAmount());
                         }
-                        print("Вы купили " + products.get(i).getName());
                         break;
                     }
                 }
@@ -159,6 +160,10 @@ public class AppRunner {
 
     private int fromConsoleInt() {
         return new Scanner(System.in).nextInt();
+    }
+
+    private long fromConsoleLong() {
+        return new Scanner(System.in).nextLong();
     }
 
     private void showProducts(UniversalArray<Product> products) {
