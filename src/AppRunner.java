@@ -39,13 +39,38 @@ public class AppRunner {
         print("В автомате доступны:");
         showProducts(products);
 
-        print("Монет на сумму: " + coinAcceptor.getAmount());
 
         UniversalArray<Product> allowProducts = new UniversalArrayImpl<>();
-        allowProducts.addAll(getAllowedProducts().toArray());
-        chooseAction(allowProducts);
+        print("Доступна оплата через банковскую карту и монетами.\nВыберите способ оплаты:\n* Карта\n* Монеты");
+        String choice = fromConsole().toLowerCase();
+
+        switch (choice){
+            case "карта":
+                print("Введите номер карты:");
+                int bankCardNumber = fromConsoleInt();
+                bankCardAcceptor.setBankCardNumber(bankCardNumber);
+                print("Введите четырехзначный пароль от карты:");
+                int passwordCard = fromConsoleInt();
+                bankCardAcceptor.setPasswordCard(passwordCard);
+                print("Баланс карты: " + bankCardAcceptor.getAmount());
+                allowProducts.addAll(getAllowedProducts().toArray());
+                chooseAction(allowProducts);
+                break;
+            case "монеты":
+                print("Монет на сумму: " + coinAcceptor.getAmount());
+                allowProducts.addAll(getAllowedProducts().toArray());
+                chooseAction(allowProducts);
+                break;
+            default:
+                print("Недопустимая команда. Попрбуйте еще раз.");
+                chooseAction(products);
+                break;
+        }
+
 
     }
+
+
 
     private UniversalArray<Product> getAllowedProducts() {
         UniversalArray<Product> allowProducts = new UniversalArrayImpl<>();
@@ -95,6 +120,10 @@ public class AppRunner {
 
     private String fromConsole() {
         return new Scanner(System.in).nextLine();
+    }
+
+    private int fromConsoleInt() {
+        return new Scanner(System.in).nextInt();
     }
 
     private void showProducts(UniversalArray<Product> products) {
