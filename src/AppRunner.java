@@ -1,4 +1,5 @@
 import enums.ActionLetter;
+import enums.PaymentMethod;
 import model.*;
 import util.UniversalArray;
 import util.UniversalArrayImpl;
@@ -10,6 +11,10 @@ public class AppRunner {
     private final UniversalArray<Product> products = new UniversalArrayImpl<>();
 
     private final CoinAcceptor coinAcceptor;
+
+    private final BanknoteAcceptor banknoteAcceptor;
+
+    private PaymentMethod paymentMethod;
 
     private static boolean isExit = false;
 
@@ -23,6 +28,8 @@ public class AppRunner {
                 new Pistachios(ActionLetter.G, 130)
         });
         coinAcceptor = new CoinAcceptor(100);
+        banknoteAcceptor = new BanknoteAcceptor(130);
+
     }
 
     public static void run() {
@@ -87,6 +94,9 @@ public class AppRunner {
         return new Scanner(System.in).nextLine();
     }
 
+    private int fromConsoleInt() {
+        return new Scanner(System.in).nextInt();
+    }
     private void showProducts(UniversalArray<Product> products) {
         for (int i = 0; i < products.size(); i++) {
             print(products.get(i).toString());
