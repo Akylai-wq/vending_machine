@@ -4,6 +4,7 @@ import model.*;
 import util.UniversalArray;
 import util.UniversalArrayImpl;
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class AppRunner {
@@ -47,7 +48,7 @@ public class AppRunner {
         }
     }
 
-    private void balance() {
+    private UniversalArray<Product> balance() {
         UniversalArray<Product> allowProducts = new UniversalArrayImpl<>();
         allowProducts.addAll(getAllowedProducts().toArray());
 
@@ -65,6 +66,7 @@ public class AppRunner {
         } else {
             chooseAction(allowProducts);
         }
+        return allowProducts;
     }
 
     private UniversalArray<Product> getAllowedProducts() {
@@ -126,23 +128,29 @@ public class AppRunner {
     }
 
     private void choosePaymentMethod() {
-        print("Выберите способ оплаты: \n1. Монеты\n2. Купюра");
-        int choice = fromConsoleInt();
+        try {
+            print("Выберите способ оплаты: \n1. Монеты\n2. Купюра");
+            int choice = fromConsoleInt();
 
-        switch (choice) {
-            case 1:
-                paymentMethod = PaymentMethod.COINS;
-                print("Монет на сумму: " + coinAcceptor.getAmount());
-                balance();
-                break;
-            case 2:
-                paymentMethod = PaymentMethod.BANKNOTE;
-                print("Купюр на сумму: " + banknoteAcceptor.getAmount());
-                balance();
-                break;
-            default:
-                print("Недопустимая команда. Попрбуйте еще раз.");
-                break;
+            switch (choice) {
+                case 1:
+                    paymentMethod = PaymentMethod.COINS;
+                    print("Монет на сумму: " + coinAcceptor.getAmount());
+                    balance();
+                    break;
+                case 2:
+                    paymentMethod = PaymentMethod.BANKNOTE;
+                    print("Купюр на сумму: " + banknoteAcceptor.getAmount());
+                    balance();
+                    break;
+                default:
+                    print("Недопустимая команда. Попрбуйте еще раз.");
+                    break;
+            }
+        } catch (InputMismatchException e) {
+            print("Введите числовое значние " + e.getMessage());
+        } catch (Exception e){
+            print("Введите числовое значние ");
         }
     }
 
