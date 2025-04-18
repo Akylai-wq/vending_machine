@@ -1,0 +1,4 @@
+git init
+git commit -m "my commit"
+git remote add origin https://github.com/Akylai-wq/vending_machine.git
+git push -u origin master
