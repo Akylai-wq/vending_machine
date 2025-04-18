@@ -28,7 +28,7 @@ public class AppRunner {
                 new Pistachios(ActionLetter.G, 130)
         });
         coinAcceptor = new CoinAcceptor(100);
-        banknoteAcceptor = new BanknoteAcceptor(130);
+        banknoteAcceptor = new BanknoteAcceptor(140);
 
     }
 
@@ -40,14 +40,29 @@ public class AppRunner {
     }
 
     private void startSimulation() {
+        if (paymentMethod == null) {
+            choosePaymentMethod();
+        }
+
         print("В автомате доступны:");
         showProducts(products);
 
-        print("Монет на сумму: " + coinAcceptor.getAmount());
-
         UniversalArray<Product> allowProducts = new UniversalArrayImpl<>();
         allowProducts.addAll(getAllowedProducts().toArray());
-        chooseAction(allowProducts);
+
+        if (allowProducts.size() == 0) {
+            print("На вашем балансе недостаточно средств.\nВы можете сменить способ оплаты: напишите (да/нет)");
+            String answer = fromConsole().toLowerCase();
+            if (answer.equals("да")) {
+                choosePaymentMethod();
+            } else if(answer.equals("нет")){
+                print("Пополните текущий баланс.");
+            } else {
+                print("Неверная команда!");
+            }
+        } else {
+            chooseAction(allowProducts);
+        }
 
     }
 
@@ -82,6 +97,25 @@ public class AppRunner {
         }
 
 
+    }
+
+    private void choosePaymentMethod() {
+        print("Выберите способ оплаты: \n1. Монеты\n2. Купюра");
+        int choice = fromConsoleInt();
+
+        switch (choice) {
+            case 1:
+                paymentMethod = PaymentMethod.COINS;
+                print("Монет на сумму: " + coinAcceptor.getAmount());
+                break;
+            case 2:
+                paymentMethod = PaymentMethod.BANKNOTE;
+                print("Купюр на сумму: " + banknoteAcceptor.getAmount());
+                break;
+            default:
+                print("Недопустимая команда. Попрбуйте еще раз.");
+                break;
+        }
     }
 
     private void showActions(UniversalArray<Product> products) {
