@@ -41,12 +41,13 @@ public class AppRunner {
 
     private void startSimulation() {
         if (paymentMethod == null) {
+            print("В автомате доступны:");
+            showProducts(products);
             choosePaymentMethod();
         }
+    }
 
-        print("В автомате доступны:");
-        showProducts(products);
-
+    private void balance() {
         UniversalArray<Product> allowProducts = new UniversalArrayImpl<>();
         allowProducts.addAll(getAllowedProducts().toArray());
 
@@ -55,48 +56,73 @@ public class AppRunner {
             String answer = fromConsole().toLowerCase();
             if (answer.equals("да")) {
                 choosePaymentMethod();
-            } else if(answer.equals("нет")){
+            } else if (answer.equals("нет")) {
                 print("Пополните текущий баланс.");
+                chooseAction(allowProducts);
             } else {
                 print("Неверная команда!");
             }
         } else {
             chooseAction(allowProducts);
         }
-
     }
 
     private UniversalArray<Product> getAllowedProducts() {
         UniversalArray<Product> allowProducts = new UniversalArrayImpl<>();
         for (int i = 0; i < products.size(); i++) {
-            if (coinAcceptor.getAmount() >= products.get(i).getPrice()) {
-                allowProducts.add(products.get(i));
+            if (paymentMethod == PaymentMethod.COINS){
+                if (coinAcceptor.getAmount() >= products.get(i).getPrice()) {
+                    allowProducts.add(products.get(i));
+                }
+            } else if (paymentMethod == PaymentMethod.BANKNOTE) {
+                if (banknoteAcceptor.getAmount() >= products.get(i).getPrice()) {
+                    allowProducts.add(products.get(i));
+                }
             }
         }
         return allowProducts;
     }
 
     private void chooseAction(UniversalArray<Product> products) {
+        print(" a - Пополнить баланс");
         showActions(products);
         print(" h - Выйти");
         String action = fromConsole().substring(0, 1);
-        try {
-            for (int i = 0; i < products.size(); i++) {
-                if (products.get(i).getActionLetter().equals(ActionLetter.valueOf(action.toUpperCase()))) {
-                    coinAcceptor.setAmount(coinAcceptor.getAmount() - products.get(i).getPrice());
-                    print("Вы купили " + products.get(i).getName());
-                    break;
-                } else if ("h".equalsIgnoreCase(action)) {
+        if ("a".equalsIgnoreCase(action)) {
+            if (paymentMethod == PaymentMethod.COINS) {
+                coinAcceptor.setAmount(coinAcceptor.getAmount() + 10);
+                print("Вы пополнили баланс на 10\nМонет на сумму: " + coinAcceptor.getAmount());
+                chooseAction(getAllowedProducts());
+            } else if (paymentMethod == PaymentMethod.BANKNOTE) {
+                banknoteAcceptor.setAmount(banknoteAcceptor.getAmount() + 20);
+                print("Вы пополнили баланс на 20\nКупюр на сумму: " + banknoteAcceptor.getAmount());
+                chooseAction(getAllowedProducts());
+            }
+        } else {
+            try {
+                for (int i = 0; i < products.size(); i++) {
+                    if (products.get(i).getActionLetter().equals(ActionLetter.valueOf(action.toUpperCase()))) {
+                        if (paymentMethod == PaymentMethod.COINS) {
+                            coinAcceptor.setAmount(coinAcceptor.getAmount() - products.get(i).getPrice());
+                            print("Вы купили " + products.get(i).getName() + "\nМонет на сумму: " + coinAcceptor.getAmount());
+                            chooseAction(getAllowedProducts());
+                        } else if (paymentMethod == PaymentMethod.BANKNOTE) {
+                            banknoteAcceptor.setAmount(banknoteAcceptor.getAmount() - products.get(i).getPrice());
+                            print("Вы купили " + products.get(i).getName() + "\nКупюр на сумму: " + banknoteAcceptor.getAmount());
+                            chooseAction(getAllowedProducts());
+                        }
+                        break;
+                    }
+                }
+            } catch (IllegalArgumentException e) {
+                if ("h".equalsIgnoreCase(action)) {
                     isExit = true;
-                    break;
+                } else {
+                    print("Недопустимая буква. Попрбуйте еще раз.");
+                    chooseAction(products);
                 }
             }
-        } catch (IllegalArgumentException e) {
-            print("Недопустимая буква. Попрбуйте еще раз.");
-            chooseAction(products);
         }
-
-
     }
 
     private void choosePaymentMethod() {
@@ -107,10 +133,12 @@ public class AppRunner {
             case 1:
                 paymentMethod = PaymentMethod.COINS;
                 print("Монет на сумму: " + coinAcceptor.getAmount());
+                balance();
                 break;
             case 2:
                 paymentMethod = PaymentMethod.BANKNOTE;
                 print("Купюр на сумму: " + banknoteAcceptor.getAmount());
+                balance();
                 break;
             default:
                 print("Недопустимая команда. Попрбуйте еще раз.");
