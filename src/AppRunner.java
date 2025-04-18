@@ -148,6 +148,7 @@ public class AppRunner {
                         break;
                     default:
                         print("Недопустимая команда. Попрбуйте еще раз.");
+                        print("f");
                         break;
                 }
             } catch (InputMismatchException e) {
