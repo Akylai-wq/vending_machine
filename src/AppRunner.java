@@ -1,4 +1,5 @@
 import enums.ActionLetter;
+import enums.PaymentMethod;
 import model.*;
 import util.UniversalArray;
 import util.UniversalArrayImpl;
@@ -126,8 +127,36 @@ public class AppRunner {
                 }
             }
         }
+    }
 
+    private void choosePaymentMethod() {
+        while (paymentMethod == null) {
+            try {
+                print("Выберите способ оплаты: \n1. Монеты\n2. Купюра");
+                int choice = fromConsoleInt();
 
+                switch (choice) {
+                    case 1:
+                        paymentMethod = PaymentMethod.COINS;
+                        print("Монет на сумму: " + coinAcceptor.getAmount());
+                        balance();
+                        break;
+                    case 2:
+                        paymentMethod = PaymentMethod.BANKNOTE;
+                        print("Купюр на сумму: " + banknoteAcceptor.getAmount());
+                        balance();
+                        break;
+                    default:
+                        print("Недопустимая команда. Попрбуйте еще раз.");
+                        print("f");
+                        break;
+                }
+            } catch (InputMismatchException e) {
+                print("Введите числовое значние " + e.getMessage());
+            } catch (Exception e) {
+                print("Введите числовое значние ");
+            }
+        }
     }
 
     private void showActions(UniversalArray<Product> products) {
@@ -140,6 +169,9 @@ public class AppRunner {
         return new Scanner(System.in).nextLine();
     }
 
+    private int fromConsoleInt() {
+        return new Scanner(System.in).nextInt();
+    }
     private void showProducts(UniversalArray<Product> products) {
         for (int i = 0; i < products.size(); i++) {
             print(products.get(i).toString());
