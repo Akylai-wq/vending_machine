@@ -45,6 +45,8 @@ public class AppRunner {
             print("В автомате доступны:");
             showProducts(products);
             choosePaymentMethod();
+        } else {
+            balance();
         }
     }
 
@@ -128,29 +130,31 @@ public class AppRunner {
     }
 
     private void choosePaymentMethod() {
-        try {
-            print("Выберите способ оплаты: \n1. Монеты\n2. Купюра");
-            int choice = fromConsoleInt();
+        while (paymentMethod == null) {
+            try {
+                print("Выберите способ оплаты: \n1. Монеты\n2. Купюра");
+                int choice = fromConsoleInt();
 
-            switch (choice) {
-                case 1:
-                    paymentMethod = PaymentMethod.COINS;
-                    print("Монет на сумму: " + coinAcceptor.getAmount());
-                    balance();
-                    break;
-                case 2:
-                    paymentMethod = PaymentMethod.BANKNOTE;
-                    print("Купюр на сумму: " + banknoteAcceptor.getAmount());
-                    balance();
-                    break;
-                default:
-                    print("Недопустимая команда. Попрбуйте еще раз.");
-                    break;
+                switch (choice) {
+                    case 1:
+                        paymentMethod = PaymentMethod.COINS;
+                        print("Монет на сумму: " + coinAcceptor.getAmount());
+                        balance();
+                        break;
+                    case 2:
+                        paymentMethod = PaymentMethod.BANKNOTE;
+                        print("Купюр на сумму: " + banknoteAcceptor.getAmount());
+                        balance();
+                        break;
+                    default:
+                        print("Недопустимая команда. Попрбуйте еще раз.");
+                        break;
+                }
+            } catch (InputMismatchException e) {
+                print("Введите числовое значние " + e.getMessage());
+            } catch (Exception e) {
+                print("Введите числовое значние ");
             }
-        } catch (InputMismatchException e) {
-            print("Введите числовое значние " + e.getMessage());
-        } catch (Exception e){
-            print("Введите числовое значние ");
         }
     }
 
